@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
+import StickyContext from './Context';
 
-export default class Sticky extends Component {
+class Sticky extends Component {
   static propTypes = {
     topOffset: PropTypes.number,
     bottomOffset: PropTypes.number,
@@ -18,12 +19,6 @@ export default class Sticky extends Component {
     disableHardwareAcceleration: false
   };
 
-  static contextTypes = {
-    subscribe: PropTypes.func,
-    unsubscribe: PropTypes.func,
-    getParent: PropTypes.func
-  };
-
   state = {
     isSticky: false,
     wasSticky: false,
@@ -31,16 +26,16 @@ export default class Sticky extends Component {
   };
 
   componentWillMount() {
-    if (!this.context.subscribe)
+    if (!this.props.context.subscribe)
       throw new TypeError(
         "Expected Sticky to be mounted within StickyContainer"
       );
 
-    this.context.subscribe(this.handleContainerEvent);
+    this.props.context.subscribe(this.handleContainerEvent);
   }
 
   componentWillUnmount() {
-    this.context.unsubscribe(this.handleContainerEvent);
+    this.props.context.unsubscribe(this.handleContainerEvent);
   }
 
   componentDidUpdate() {
@@ -54,7 +49,7 @@ export default class Sticky extends Component {
     distanceFromBottom,
     eventSource
   }) => {
-    const parent = this.context.getParent();
+    const parent = this.props.context.getParent();
 
     let preventingStickyStateChanges = false;
     if (this.props.relative) {
@@ -135,3 +130,9 @@ export default class Sticky extends Component {
     );
   }
 }
+
+export default React.forwardRef((props, ref) => (
+  <StickyContext.Consumer>
+    {context => <Sticky {...props} context={context} ref={ref} />}
+  </StickyContext.Consumer>
+));

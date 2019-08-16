@@ -1,22 +1,8 @@
 import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
 import raf from "raf";
+import StickyContext from './Context';
 
 export default class Container extends PureComponent {
-  static childContextTypes = {
-    subscribe: PropTypes.func,
-    unsubscribe: PropTypes.func,
-    getParent: PropTypes.func
-  };
-
-  getChildContext() {
-    return {
-      subscribe: this.subscribe,
-      unsubscribe: this.unsubscribe,
-      getParent: this.getParent
-    };
-  }
-
   events = [
     "resize",
     "scroll",
@@ -80,14 +66,22 @@ export default class Container extends PureComponent {
 
   render() {
     return (
-      <div
-        {...this.props}
-        ref={node => (this.node = node)}
-        onScroll={this.notifySubscribers}
-        onTouchStart={this.notifySubscribers}
-        onTouchMove={this.notifySubscribers}
-        onTouchEnd={this.notifySubscribers}
-      />
+      <StickyContext.Provider value={
+        {
+          subscribe: this.subscribe,
+          unsubscribe: this.unsubscribe,
+          getParent: this.getParent
+        }
+      }>
+        <div
+          {...this.props}
+          ref={node => (this.node = node)}
+          onScroll={this.notifySubscribers}
+          onTouchStart={this.notifySubscribers}
+          onTouchMove={this.notifySubscribers}
+          onTouchEnd={this.notifySubscribers}
+        />
+      </StickyContext.Provider>
     );
   }
 }
