@@ -25,7 +25,7 @@ class Sticky extends Component {
     style: {}
   };
 
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.context.subscribe)
       throw new TypeError(
         "Expected Sticky to be mounted within StickyContainer"

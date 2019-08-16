@@ -1,5 +1,6 @@
 require("@babel/register")();
-
+const enzyme = require('enzyme');
+const Adapter = require('enzyme-adapter-react-16');
 const jsdom = require("jsdom").jsdom;
 
 const exposedProperties = ["window", "navigator", "document"];
@@ -16,6 +17,8 @@ Object.keys(document.defaultView).forEach(property => {
 global.navigator = {
   userAgent: "node.js"
 };
+
+enzyme.configure({ adapter: new Adapter() });
 
 documentRef = document;
 
